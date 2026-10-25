@@ -23,4 +23,6 @@ test('validates capacity, duration, and future time', () => {
   assert.match(bookingError(candidate({ people: 5 }), [], rooms, now), /1–4 people/);
   assert.match(bookingError(candidate({ end: '11:15' }), [], rooms, now), /at least 30 minutes/);
   assert.match(bookingError(candidate({ date: '2026-10-24' }), [], rooms, now), /future/);
+  assert.match(bookingError(candidate({ date: '2026-02-31' }), [], rooms, now), /real calendar date/);
+  assert.match(bookingError(candidate({ start: '10:15' }), [], rooms, now), /half-hour/);
 });

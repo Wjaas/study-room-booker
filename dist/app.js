@@ -104,7 +104,8 @@ function closeRoom() { $('room-dialog').close(); editingRoomId = null; }
 function saveRoom(event) {
   event.preventDefault();
   const name = $('room-name').value.trim(), location = $('room-location').value.trim(), capacity = Number($('room-capacity').value);
-  const error = !name ? 'Add a room name.' : !location ? 'Add a location.' : !Number.isInteger(capacity) || capacity < 1 || capacity > 30 ? 'Capacity must be between 1 and 30.' : state.rooms.some(room => room.id !== editingRoomId && room.name.toLowerCase() === name.toLowerCase()) ? 'A room with that name already exists.' : null;
+  const maxExistingParty = Math.max(0, ...state.bookings.filter(booking => booking.roomId === editingRoomId).map(booking => booking.people));
+  const error = !name ? 'Add a room name.' : !location ? 'Add a location.' : !Number.isInteger(capacity) || capacity < 1 || capacity > 30 ? 'Capacity must be between 1 and 30.' : capacity < maxExistingParty ? `This room has a booking for ${maxExistingParty} people. Choose at least that capacity.` : state.rooms.some(room => room.id !== editingRoomId && room.name.toLowerCase() === name.toLowerCase()) ? 'A room with that name already exists.' : null;
   if (error) { $('room-error').textContent = error; $('room-error').hidden = false; return; }
   const candidate = { name, location, capacity, amenities: [...document.querySelectorAll('input[name="amenity"]:checked')].map(input => input.value) };
   const wasEditing = Boolean(editingRoomId);
